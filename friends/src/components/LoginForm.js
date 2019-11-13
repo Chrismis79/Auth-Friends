@@ -32,7 +32,7 @@ const Login = props => {
     axiosWithAuth()
       .post("/login", credentials)
       .then(res => {
-        localStorage.setItem("token", res.data.payload);
+        sessionStorage.setItem("token", res.data.payload);
         props.history.push("/friends");
       })
       .catch(err => console.log(err));

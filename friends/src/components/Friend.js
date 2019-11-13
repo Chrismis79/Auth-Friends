@@ -4,6 +4,7 @@ import { axiosWithAuth } from "../utils/axiosWithAuth";
 import FriendList from "./FriendList";
 import SignupForm from "./SignupForm";
 import Header from '../components/Header';
+import Logout from './Logout';
 
 const Friends = () => {
   const [friends, setFriends] = useState([]);
@@ -27,11 +28,13 @@ const Friends = () => {
       .catch(err => console.log(err));
   }, [newGet]);
 
+  
+
   return (
       
     <div className="friends">
         <Header/>
-        <button onClick={()=> sessionStorage.clear()}>Logout</button>
+        <Logout/>
       <h1>Friends List</h1>
       <FriendList
         friends={friends}

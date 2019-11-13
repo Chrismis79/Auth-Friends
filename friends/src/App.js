@@ -1,6 +1,6 @@
 import React from "react";
 import "./App.css";
-import { Switch, Route } from "react-router-dom";
+import { Switch, Route, withRouter } from "react-router-dom";
 
 import Nav from "./components/Nav";
 
@@ -16,10 +16,10 @@ function App() {
         <Route exact path="/login" component={LoginForm} />
         <PrivateRoute>
           <Route path='/friends' component={Friend}/>
-        </PrivateRoute> exact path="/friends" component={Friend}>
+        </PrivateRoute> 
       </Switch>
     </div>
   );
 }
 
-export default App;
+export default withRouter(App);
