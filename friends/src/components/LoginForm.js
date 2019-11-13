@@ -4,54 +4,67 @@
 //Login button
 //The login function should save the returned token to localStorage. You can setup isLoading state in your Login component, and show a spinner on your form or in your button while the login request is happening.
 //When the request returns, save the token to localStorage, then use the history object in your Login component to navigate your user to your FriendsList route.
-import React from 'react';
-import axios from 'axios';
+import React, { useState } from "react";
+import { axiosWithAuth } from "../utils/axiosWithAuth";
+import "../App.css";
+import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
+import Loader from "react-loader-spinner";
 
-class Login extends React.Component {
-    state = {
-        credentials: {
-            username: '',
-            password: ''
-        },
-        isLoggedIn: false
-    };
+const Login = props => {
+  //   console.log("Login", props);
+  const [credentials, setCredentials] = useState({
+    username: "",
+    password: ""
+  });
+  const [isLoading, setIsLoading] = useState(false);
 
-    handleChange = e => {
-        this.setState({
-            credentials: {
-                ...this.state.credentials,
-                [e.target.name]: e.target.value
-            }
-        });
-    };
+  //   console.log("Cred", credentials);
+  const handleChange = e => {
+    setCredentials({
+      ...credentials,
+      [e.target.name]: e.target.value
+    });
+  };
 
-    login = e => {
-        e.preventDefault();
-        axios.post('/api/login', this.state.credentials)
-            .then(res => {
-                console.log('Response', res);
-                const {data} = res;
+  const login = e => {
+    e.preventDefault();
+    setIsLoading(true);
+    axiosWithAuth()
+      .post("/login", credentials)
+      .then(res => {
+        localStorage.setItem("token", res.data.payload);
+        props.history.push("/friends");
+      })
+      .catch(err => console.log(err));
+  };
 
-                sessionStorage.setItem('token', data.payload);
-                this.setState({...this.state, isLoggedIn: true});
-            })
-    }
+  return (
+    <div>
+      <form onSubmit={login}>
+        <input
+          type="text"
+          name="username"
+          value={credentials.username}
+          onChange={handleChange}
+        />
+        <input
+          type="password"
+          name="password"
+          value={credentials.password}
+          onChange={handleChange}
+        />
+        <button>Log in</button>
+      </form>
+      <div className="loading">
+        {isLoading && (
+          <>
+            <h2>Loading...</h2>
+            <Loader type="Hearts" color="red" height={80} width={80} />
+          </>
+        )}
+      </div>
+    </div>
+  );
+};
 
-    render() {
-        return (
-            <div>
-                <h2>{this.state.isLoggedIn ? "LOGGED IN! Proceed to Friends" : "Please login"}</h2>
-                <form onSubmit={this.login}>
-                    <input type='text' name='username' value={this.state.credentials.username}
-                    onChange={this.handleChange}/>
-                    <input type='password'
-                    name='password'
-                    value={this.state.credentials.password}
-                    onChange={this.handleChange}/>
-                    <button>Log In</button>
-                </form>
-            </div>
-        );
-    }
-}
 export default Login;

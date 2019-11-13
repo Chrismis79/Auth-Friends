@@ -1,42 +1,56 @@
-import React from 'react';
-import Loader from 'react-loader-spinner';
-import axios from 'axios';
+import React from "react";
+import "../App.css";
+import { axiosWithAuth } from "../utils/axiosWithAuth";
 
-const axiosWithAuth = () => {
-    return axios.create({
-        headers: {
-            authorization: sessionStorage.getItem('token')
-        }
-    });
-};
-
-class FriendList extends React.Component{
-    state ={
-        friends: []
-    };
-
-    componentDidMount(){
-        this.getData();
-        if(!sessionStorage.getItem('token')){
-            console.error('Please Login!');
-        }else {
-            console.info('You are logged in!');
-        }
-    }
-    getData = () => {
-        const authAxios = axiosWithAuth();
-        authAxios.get('api/friends')
-        .then(res => {
-            this.setState({friends: res.data.data});
+const FriendList = props => {
+  const editFriend = id => {
+    axiosWithAuth()
+      .get("/friends/" + id)
+      .then(res => {
+        console.log("EDIT", res.data);
+        props.setnewFriend({
+          id: res.data.id,
+          name: res.data.name,
+          age: res.data.age,
+          email: res.data.email
         });
-    };
+      })
+      .catch(err => console.log(err));
+    props.setEdit(true);
+  };
 
-    render(){
-        console.log(this.state.friends);
-    return(
-        <h2>Friend List</h2>
-        
-    );
+  const deleteFriend = id => {
+    // console.log("ID", id);
+    axiosWithAuth()
+      .delete("/friends/" + id)
+      .then(res => {
+        console.log("ADD", res.data);
+        props.setNewGet(true);
+      })
+      .catch(err => console.log(err));
+  };
+
+  return (
+    <div className="friendsList">
+      {props.friends.map(item => {
+        return (
+          <div className="card" key={item.id}>
+            <div className="buttonBox">
+              <button onClick={() => editFriend(item.id)} className="button">
+                &#9998;
+              </button>
+              <button onClick={() => deleteFriend(item.id)} className="button">
+                &#10006;
+              </button>
+            </div>
+            <h3>{item.name}</h3>
+            <p>Age {item.age}</p>
+            <p>Email {item.email}</p>
+          </div>
+        );
+      })}
+    </div>
+  );
 };
-}
+
 export default FriendList;

@@ -1,21 +1,20 @@
-import React from 'react';
-import {Route, Redirect} from 'react-router-dom';
+import React from "react";
+import "../App.css";
+import { Route, Redirect } from "react-router-dom";
 
-const isAuthenticated = () => {
-    return sessionStorage.getItem('token') ? true : false;
+const PrivateRoute = ({ component: Component, ...rest }) => {
+  return (
+    <Route
+      {...rest}
+      render={() => {
+        if (sessionStorage.getItem("token")) {
+          return <Component />;
+        } else {
+          return <Redirect to="/login" />;
+        }
+      }}
+    />
+  );
 };
-export default function PrivateRoute({children, ...rest}){
-    return(
-        <Route 
-          {...rest}
-          render={() => isAuthenticated() ? (
-              children) : (
-                  <Redirect to={{
-                      pathname: '/login'
 
-                  }}
-                  />
-              )
-         }/>
-    );
-}
+export default PrivateRoute;
